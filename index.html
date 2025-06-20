@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的个人博客 - 音乐分享</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            color: #e0e0e0;
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 10% 20%, rgba(26, 82, 118, 0.2) 0%, transparent 20%),
+                        radial-gradient(circle at 90% 80%, rgba(106, 27, 154, 0.2) 0%, transparent 20%);
+            z-index: -1;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px;
+            position: relative;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .logo i {
+            font-size: 2.5rem;
+            color: #4cc9f0;
+        }
+        
+        .logo h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(to right, #4cc9f0, #4361ee);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+        
+        .subtitle {
+            color: #a0a0c0;
+            font-size: 1.2rem;
+            max-width: 600px;
+            margin: 0 auto 30px;
+            line-height: 1.7;
+        }
+        
+        .search-box {
+            background: rgba(45, 45, 68, 0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 50px;
+            padding: 12px 25px;
+            max-width: 600px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            border: 1px solid #4a4a6a;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .search-box:hover {
+            border-color: #5a5a8a;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+        }
+        
+        .search-box i {
+            margin-right: 15px;
+            color: #7c7ca5;
+            font-size: 1.2rem;
+        }
+        
+        .search-box input {
+            background: transparent;
+            border: none;
+            color: white;
+            width: 100%;
+            font-size: 1.1rem;
+            outline: none;
+            padding: 8px 0;
+        }
+        
+        .search-box input::placeholder {
+            color: #7c7ca5;
+        }
+        
+        /* 布局样式 */
+        main {
+            display: flex;
+            gap: 30px;
+        }
+        
+        .categories {
+            width: 280px;
+            background: rgba(30, 30, 46, 0.8);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 25px 20px;
+            align-self: flex-start;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border: 1px solid #3a3a5a;
+        }
+        
+        .categories h2 {
+            margin-bottom: 25px;
+            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #4cc9f0;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #3a3a5a;
+        }
+        
+        .categories ul {
+            list-style: none;
+        }
+        
+        .categories li {
+            padding: 15px 20px;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: all 0.3s;
+            font-size: 1.1rem;
+            position: relative;
+        }
+        
+        .categories li:hover {
+            background: rgba(76, 201, 240, 0.15);
+        }
+        
+        .categories li.active {
+            background: rgba(76, 201, 240, 0.25);
+            color: #4cc9f0;
+            font-weight: 600;
+        }
+        
+        .categories li i {
+            width: 25px;
+            text-align: center;
+        }
+        
+        /* 音乐分享链接样式 */
+        .music-link {
+            display: block;
+            width: 100%;
+            height: 100%;
+            color: inherit;
+            text-decoration: none;
+        }
+        
+        .music-link:hover {
+            color: inherit;
+        }
+        
+        /* 博客内容区域样式 */
+        .blog-container {
+            flex: 1;
+            background: rgba(30, 30, 46, 0.8);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border: 1px solid #3a3a5a;
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
+        }
+        
+        .blog-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #3a3a5a;
+        }
+        
+        .blog-header h2 {
+            font-size: 1.8rem;
+            color: #4cc9f0;
+        }
+        
+        .blog-header .filter {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .filter-btn {
+            background: rgba(45, 45, 68, 0.6);
+            border: 1px solid #4a4a6a;
+            color: #a0a0c0;
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .filter-btn:hover, .filter-btn.active {
+            background: rgba(76, 201, 240, 0.25);
+            color: #4cc9f0;
+            border-color: #4cc9f0;
+        }
+        
+        /* 博客文章样式 */
+        .blog-post {
+            background: rgba(45, 45, 68, 0.6);
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid #4a4a6a;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s;
+        }
+        
+        .blog-post:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(76, 201, 240, 0.3);
+            border-color: #4cc9f0;
+        }
+        
+        .post-header {
+            margin-bottom: 20px;
+        }
+        
+        .post-header h3 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            color: #f1faee;
+        }
+        
+        .post-meta {
+            display: flex;
+            gap: 15px;
+            color: #7c7ca5;
+            font-size: 0.9rem;
+        }
+        
+        .post-content {
+            margin-bottom: 20px;
+            line-height: 1.8;
+            color: #d0d0e0;
+        }
+        
+        .post-content p {
+            margin-bottom: 20px;
+        }
+        
+        /* 图片展示样式 */
+        .image-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .gallery-item {
+            border-radius: 10px;
+            overflow: hidden;
+            height: 200px;
+            position: relative;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s;
+        }
+        
+        .gallery-item:hover {
+            transform: scale(1.03);
+            box-shadow: 0 10px 25px rgba(76, 201, 240, 0.3);
+        }
+        
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        
+        /* 视频展示样式 */
+        .video-container {
+            margin: 25px 0;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            position: relative;
+            background: #000;
+        }
+        
+        .video-container video {
+            width: 100%;
+            display: block;
+        }
+        
+        .video-info {
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.7);
+        }
+        
+        .video-info h4 {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            color: #f1faee;
+        }
+        
+        .video-info p {
+            color: #a0a0c0;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+        
+        .post-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid #3a3a5a;
+            padding-top: 15px;
+            margin-top: 15px;
+        }
+        
+        .tags {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .tag {
+            background: rgba(114, 9, 183, 0.2);
+            color: #c77dff;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+        }
+        
+        .read-more {
+            background: linear-gradient(to right, #4361ee, #4cc9f0);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .read-more:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.4);
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 1100px) {
+            main {
+                flex-direction: column;
+            }
+            
+            .categories {
+                width: 100%;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .logo h1 {
+                font-size: 2rem;
+            }
+            
+            .subtitle {
+                font-size: 1rem;
+            }
+            
+            .image-gallery {
+                grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            }
+            
+            .blog-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            
+            .filter {
+                width: 100%;
+                flex-wrap: wrap;
+            }
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            padding: 30px 0;
+            color: #7c7ca5;
+            font-size: 0.95rem;
+            border-top: 1px solid #3a3a5a;
+        }
+        
+        /* 图片和视频容器 */
+        .media-container {
+            margin: 25px 0;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            position: relative;
+        }
+        
+        .media-container img {
+            width: 100%;
+            display: block;
+        }
+        
+        .media-container video {
+            width: 100%;
+            display: block;
+        }
+        
+        .media-caption {
+            padding: 12px 15px;
+            background: rgba(0, 0, 0, 0.7);
+            font-size: 0.9rem;
+            color: #d0d0e0;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <i class="fas fa-blog"></i>
+                <h1>个人博客空间</h1>
+            </div>
+            <p class="subtitle">记录创新创意</p>
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="搜索博客内容...">
+            </div>
+        </header>
+        
+        <main>
+            <!-- 左侧分类 -->
+            <aside class="categories">
+                <h2><i class="fas fa-th-large"></i> 博客分类</h2>
+                <ul>
+                    <li><i class="fas fa-video"></i> 视频日志</li>                
+                    <li>
+                        <a href="music.html" class="music-link">
+                            <i class="fas fa-music"></i> 音乐分享
+                        </a>
+                    </li>
+                </ul>
+            </aside>
+
+            <!-- 右侧博客内容 -->
+            <section class="blog-container">
+                <div class="blog-header">
+                    <h2>最新博客文章</h2>
+                    <div class="filter">
+                    </div>
+                </div>
+                
+                <!-- 博客文章1：摄影作品 -->
+                <article class="blog-post">
+                    <div class="post-header">
+                        <h3>少女成长物语————山田尚子神的诞生</h3>
+                        <div class="post-meta">
+                            <span><i class="far fa-calendar"></i> 2025年5月3日</span>
+                            <span><i class="far fa-user"></i> 作者：罗_mio</span>
+                            <span><i class="far fa-eye"></i> 阅读量：114514</span>
+                        </div>
+                    </div>
+                    
+                    <div class="post-content">
+                        <p>素材：你的颜色，轻音少女tv，NHK山田尚子访谈记录，轻音少女原画设定集，轻音少女NCOP（部分出处不明）</p>
+                        <p>音乐：
+                            <br>1.Amen, I'm Going Somewhere
+                            <br>2.Cagayake! GIRLS
+                            <br>3.SHIROBAKO
+                            <br>4.海の見える街
+                            <br>5.いい夢見てね
+                        </p>
+                        
+                       <div class="media-container">
+                             <img src="images/girls-growing.png" alt="杂谈封面" width="960" height="540">
+                            <div class="media-caption">杂谈封面展示</div>
+                        </div>
+                        
+                         <div class="media-container">
+                            <video controls width="100%" height="100%">
+                             <source src="videos/final.mp4" type="video/mp4">
+                                    您的浏览器不支持视频播放。
+                                 </video>
+                            <div class="media-caption">创作过程记录视频</div>
+                        </div>
+                        
+                        <p>简介：这篇稿子写了很久，最早还是在三年前写的，因为被群友翻出来才想起这篇稿子，前前后后修改了不少，正好山田尚子的新电影上映，也算是自己对于青春的一个总结了，很久都没有费这么大的精力来做视频了。音频的录制方面因为设备比较简陋（手机录音），再加上多次补录，导致音色前后有些差异，希望谅解（up声音实在算不上好听，就当听个响吧）</p>
+                        <p>最后感谢@Dorufoc @Azuki咔咔 @牛腩爆炒BGE 提供的封面制作思路</p>
+                    </div>
+                    
+                    <div class="post-footer">
+                        <div class="tags">
+                            <span class="tag">杂谈</span>
+                            <span class="tag">山田尚子</span>
+                            <span class="tag">轻音少女</span>
+                            <span class="tag">少女乐队</span>
+                        </div>
+<a 
+   href="https://www.bilibili.com/video/BV1SXVJzREAX/?spm_id_from=333.1387.homepage.video_card.click" 
+   class="read-more"
+   target="_blank"
+   rel="noopener"
+>
+  观看原视频
+</a>
+                    </div>
+                </article>
+                
+                <!-- 博客文章2：视频日志 -->
+                <article class="blog-post">
+                    <div class="post-header">
+                        <h3>AE仿蜕变的稚气工程记录</h3>
+                        <div class="post-meta">
+                            <span><i class="far fa-calendar"></i> 2025年3月20日</span>
+                            <span><i class="far fa-user"></i> 原作者：叫我XX也行</span>
+                            <span><i class="far fa-eye"></i> 阅读量：1,872</span>
+                        </div>
+                    </div>
+                    
+                    <div class="post-content">
+                        <p>从寒假开始跟着小何发的工程文件开始仿做xx大佬的视频，中途学到了很多ae的一些操作技巧，像是多层蒙版嵌套，particle粒子发射，利用发射器循环生成多种不同的动画元素，虽然只做了十来秒，曲线调整也还做得不怎么好，但是实际做了一遍更加惊叹于xx大佬的实力了(这玩意真的太肝了)</p>
+                        
+                          <div class="media-container">
+                            <img src="images/工程文件展示.png" alt="工程文件展示" width="960" height="540">
+                            <div class="media-caption">AE工程文件展示</div>
+                        </div>
+                        <div class="media-container">
+                              <video controls width="100%" height="100%">
+                                <source src="videos/main_1.mp4" type="video/mp4">
+                                您的浏览器不支持视频播放。
+                                 </video>
+                            <div class="media-caption">最终效果展示</div>
+                        </div>
+                        
+                        <p>使用软件版本为Adobe After Effects 2024</p>                  
+                    <div class="post-footer">
+                        <div class="tags">
+                            <span class="tag">学习记录</span>
+                            <span class="tag">AE工程文件分享</span>
+                            <span class="tag">仿蜕变的稚气</span>
+                            <span class="tag">动画制作</span>
+                        </div>
+                        <a href="#" class="read-more">阅读全文</a>
+                    </div>
+                </article>
+            </section>
+        </main>
+        
+        <footer>
+            <p>© 2025 我的个人博客 | 学习个人创意记录</p>
+            <p>本网站所有内容均为原创，转载请注明出处</p>
+            <div class="social-links" style="margin-top: 15px;">
+                <a href="#" style="color: #4cc9f0; margin: 0 10px; font-size: 1.2rem;"><i class="fab fa-weibo"></i></a>
+                <a href="#" style="color: #4cc9f0; margin: 0 10px; font-size: 1.2rem;"><i class="fab fa-bilibili"></i></a>
+                <a href="#" style="color: #4cc9f0; margin: 0 10px; font-size: 1.2rem;"><i class="fab fa-github"></i></a>
+            </div>
+        </footer>
+    </div>
+    
+    <script>
+        document.querySelectorAll('.categories li').forEach(item => {
+            
+            if (!item.querySelector('.music-link')) {
+                item.addEventListener('click', function() {
+                    document.querySelectorAll('.categories li').forEach(li => {
+                        li.classList.remove('active');
+                    });
+                    this.classList.add('active');
+                    const category = this.textContent.trim();
+                });
+            }
+        });
+        const searchInput = document.querySelector('.search-box input');
+        searchInput.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            
+            document.querySelectorAll('.blog-post').forEach(post => {
+                const text = post.textContent.toLowerCase();
+                if(text.includes(searchTerm)) {
+                    post.style.display = 'block';
+                } else {
+                    post.style.display = 'none';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
