@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>音乐播放器</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            color: #f0f0f0;
+            overflow-x: hidden;
+        }
+
+        .main {
+            position: relative;
+            width: 90%;
+            max-width: 1100px;
+            height: 85vh;
+            display: flex;
+            background: linear-gradient(to right, #2c3e50, #4a6582);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+            transition: all 0.3s ease;
+        }
+
+        #logo {
+            position: absolute;
+            top: 25px;
+            left: 35px;
+            font-size: 28px;
+            color: #e0e0e0;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+        }
+
+        #logo i {
+            margin-right: 12px;
+            color: #ff6b6b;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px;
+            border-radius: 50%;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Left section - Player */
+        .player-section {
+            position: relative;
+            height: 100%;
+            width: 40%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 30px;
+            background: rgba(0, 0, 0, 0.15);
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        #track_image {
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            object-fit: cover;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
+            margin-bottom: 35px;
+            border: 4px solid rgba(255, 255, 255, 0.15);
+            transition: transform 0.4s ease;
+        }
+
+        #track_image:hover {
+            transform: scale(1.02);
+        }
+
+        .volume {
+            display: flex;
+            align-items: center;
+            width: 85%;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .volume i {
+            font-size: 22px;
+            cursor: pointer;
+            color: #ff6b6b;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 12px;
+            border-radius: 50%;
+            transition: all 0.3s;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .volume i:hover {
+            background: rgba(255, 107, 107, 0.3);
+            transform: scale(1.1);
+        }
+
+        #volume_show {
+            min-width: 45px;
+            text-align: center;
+            font-weight: 600;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 16px;
+        }
+
+         #volume {
+            flex: 1;
+            height: 6px;
+            appearance: none; 
+            -webkit-appearance: none; 
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            outline: none;
+        }
+
+        #volume::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #ff6b6b;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 0 8px rgba(255, 107, 107, 0.7);
+        }
+
+        #volume::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+        }
+
+        .player-controls {
+            width: 85%;
+            margin-top: 25px;
+        }
+
+        .show_song_no {
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px 18px;
+            border-radius: 20px;
+            font-size: 17px;
+            margin-bottom: 20px;
+            justify-content: center;
+        }
+
+        .middle {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin: 20px 0;
+        }
+
+        .middle button {
+            background: transparent;
+            border: none;
+            color: white;
+            cursor: pointer;
+            width: 65px;
+            height: 65px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.3s;
+            font-size: 22px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .middle button:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        #play {
+            background: #ff6b6b;
+            width: 75px;
+            height: 75px;
+        }
+
+        #play:hover {
+            transform: scale(1.08);
+            box-shadow: 0 7px 20px rgba(255, 107, 107, 0.5);
+        }
+
+        .duration {
+            width: 100%;
+            margin: 25px 0 15px;
+        }
+
+        #duration_slider {
+            width: 100%;
+            height: 7px;
+            -webkit-appearance: none; 
+            appearance: none; 
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            outline: none;
+        }
+
+        #duration_slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #ff6b6b;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 0 8px rgba(255, 107, 107, 0.7);
+        }
+
+        #duration_slider::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+        }
+
+        #auto {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: white;
+            padding: 12px 25px;
+            border-radius: 30px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.3s;
+            font-size: 17px;
+            margin: 10px auto 0;
+            width: fit-content;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        #auto:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        #auto.active {
+            background: rgba(255, 107, 107, 0.3);
+        }
+
+        /* Right section - Review */
+        .review-section {
+            position: relative;
+            height: 100%;
+            width: 60%;
+            display: flex;
+            flex-direction: column;
+            padding: 40px;
+            background: rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .song-info {
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        #title {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: #fff;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+        }
+
+        #artist {
+            font-size: 22px;
+            color: #ff6b6b;
+            opacity: 0.9;
+            margin-bottom: 5px;
+        }
+
+        .album-info {
+            font-size: 16px;
+            color: #aaa;
+            margin-bottom: 20px;
+        }
+
+        .review-container {
+            position: relative;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 15px;
+            padding: 30px;
+            height: 65%;
+            overflow: hidden;
+            box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .review-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .review-header i {
+            font-size: 28px;
+            color: #ff6b6b;
+            margin-right: 15px;
+        }
+
+        .review-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        #review {
+            width: 100%;
+            font-size: 16px;
+            line-height: 1.8;
+            color: #e0e0e0;
+            max-height: calc(100% - 60px);
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        #review::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        #review::-webkit-scrollbar-thumb {
+            background: rgba(255, 107, 107, 0.5);
+            border-radius: 4px;
+        }
+
+        /* Song list display */
+        .song-list {
+            position: absolute;
+            bottom: 25px;
+            left: 0;
+            width: 100%;
+            padding: 0 40px;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .song-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 12px 22px;
+            border-radius: 30px;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .song-item:hover {
+            background: rgba(255, 107, 107, 0.3);
+            transform: translateY(-3px);
+        }
+
+        .song-item.active {
+            background: rgba(255, 107, 107, 0.5);
+            font-weight: bold;
+        }
+
+        /* Animation for track image */
+        @keyframes rotateAlbum {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .playing #track_image {
+            animation: rotateAlbum 20s linear infinite;
+        }
+
+        /* Responsive design */
+        @media (max-width: 900px) {
+            .main {
+                flex-direction: column;
+                height: auto;
+                min-height: 90vh;
+            }
+            
+            .player-section, .review-section {
+                width: 100%;
+                padding: 30px 20px;
+            }
+            
+            .player-section {
+                padding-top: 70px;
+                border-right: none;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            }
+            
+            #track_image {
+                width: 240px;
+                height: 240px;
+                /* 保持圆形 */
+                border-radius: 50%;
+            }
+            
+            .review-container {
+                height: 300px;
+            }
+            
+            .song-list {
+                position: relative;
+                margin-top: 20px;
+                padding: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .song-list {
+                gap: 10px;
+            }
+            
+            .song-item {
+                padding: 10px 18px;
+                font-size: 14px;
+            }
+            
+            #title {
+                font-size: 28px;
+            }
+            
+            #artist {
+                font-size: 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main">
+        <p id="logo"><i class="fa fa-music"></i>音乐播放器</p>
+        
+        <!-- Player Section (Left) -->
+        <div class="player-section">
+            <img id="track_image" src="imges/所以我放弃了音乐专辑封面.jpg" alt="Album Cover">
+            
+            <div class="player-controls">
+                <div class="show_song_no">
+                    <p id="present">1</p>
+                    <p>/</p>
+                    <p id="total">5</p>
+                </div>
+                
+                <div class="middle">
+                    <button id="pre" onclick="previous_song()"><i class="fa fa-step-backward" aria-hidden="true"></i></button>
+                    <button id="play" onclick="justplay()"><i class="fa fa-play" aria-hidden="true"></i></button>
+                    <button id="next" onclick="next_song()"><i class="fa fa-step-forward" aria-hidden="true"></i></button>
+                </div>
+                
+                <div class="duration">
+                    <input type="range" min="0" max="100" value="0" id="duration_slider">
+                </div>
+                
+                <button id="auto" onclick="autoplay_switch()">
+                    <i class="fa fa-circle-o-notch" aria-hidden="true"></i> Auto play
+                </button>
+            </div>
+            
+            <div class="volume">
+                <p id="volume_show">90</p>
+                <i class="fa fa-volume-up" aria-hidden="true" id="volume_icon" onclick="mute_sound()"></i>
+                <input type="range" min="0" max="100" value="90" id="volume">  
+            </div>
+        </div>
+        
+        <!-- Review Section (Right) -->
+        <div class="review-section">
+            <div class="song-info">
+                <p id="title">八月、某、月明かり</p>
+                <p id="artist">Yorushika</p>
+                <p class="album-info">专辑《所以我放弃了音乐》</p>
+            </div>
+            
+            <div class="review-container">
+                <div class="review-header">
+                    <i class="fa fa-commenting-o" aria-hidden="true"></i>
+                    <h2 class="review-title">歌曲乐评</h2>
+                </div>
+                <div id="review">这首歌曲以优美的旋律和深情的歌词，描绘了夏夜月光下的思念与回忆。钢琴与吉他的交织营造出梦幻般的氛围，主唱独特的嗓音将情感层层递进，令人沉醉其中。</div>
+            </div>
+        </div>
+        
+        <!-- Song List -->
+        <div class="song-list">
+            <div class="song-item active">八月、某、月明かり</div>
+            <div class="song-item">夕凪、某、花惑い</div>
+            <div class="song-item">爆弾魔</div>
+            <div class="song-item">不莱梅</div>
+            <div class="song-item">放晴</div>
+        </div>
+    </div>
+
+    <script>
+        // DOM elements
+        const previous = document.querySelector('#pre');
+        const play = document.querySelector('#play');
+        const next = document.querySelector('#next');
+        const title = document.querySelector('#title');
+        const volumeSlider = document.querySelector('#volume');
+        const volumeShow = document.querySelector('#volume_show');
+        const volumeIcon = document.querySelector('#volume_icon');
+        const durationSlider = document.querySelector('#duration_slider');
+        const trackImage = document.querySelector('#track_image');
+        const autoPlayBtn = document.querySelector('#auto');
+        const presentTrack = document.querySelector('#present');
+        const totalTracks = document.querySelector('#total');
+        const artist = document.querySelector('#artist');
+        const songItems = document.querySelectorAll('.song-item');
+        const reviewElement = document.querySelector('#review');
+        const mainContainer = document.querySelector('.main');
+        
+        let timer;
+        let autoplay = 0;
+        let index_no = 0;
+        let Playing_song = false;
+        
+        // Create audio element
+        const track = document.createElement('audio');
+        
+        // All songs data with original paths
+        const All_song = [
+            {
+                name: "八月、某、月明かり",
+                path: "music/八月、某、月明かり.m4a",
+                img: "images/所以我放弃了音乐.jpg",
+                singer: "Yorushika",
+                album: "专辑《所以我放弃了音乐》",
+                review: "这首歌曲以优美的旋律和深情的歌词，描绘了夏夜月光下的思念与回忆。钢琴与吉他的交织营造出梦幻般的氛围，主唱独特的嗓音将情感层层递进，令人沉醉其中。\n\n歌曲开头的钢琴旋律宛如月光洒落，瞬间将听众带入夏夜的氛围中。主歌部分以轻柔的吉他伴奏铺垫，随着歌曲推进，鼓点逐渐加入，形成丰富的声音层次。副歌部分情感爆发，主唱充满张力的嗓音配合弦乐的加入，将歌曲推向高潮。\n\n歌词描绘了夏夜中无法释怀的思念，月光成为贯穿全曲的意象，象征着既美丽又忧伤的回忆。歌曲最后回归平静，如同月光渐渐隐去，留下无尽的回味。"
+            },
+            {
+                name: "夕凪、某、花惑い",
+                path: "music/夕凪、某、花惑い.m4a",
+                img: "images/エルマ.jpg",
+                singer: "Yorushika",
+                album: "专辑《Elma》",
+                review: "黄昏时分的静谧之歌，旋律如微风拂过花丛。歌曲中弦乐的运用恰到好处，与电子元素的结合创造出现代与古典的完美融合，讲述了一个关于成长与告别的故事。\n\n开篇以清澈的钢琴音符引入，仿佛落日余晖中的第一缕微风。主歌部分加入柔和的电子节拍，与弦乐交织出既现代又古典的独特质感。副歌部分旋律优美流畅，歌词充满诗意，描绘了黄昏时分面对成长与离别的复杂心情。\n\n中段的吉他独奏是整首歌的亮点，充满情感的演奏将歌曲情绪推向高潮。最后一段副歌后，音乐渐渐淡出，如同暮色四合，留下无尽的思绪。这首歌适合在黄昏时分静静聆听，感受时间流逝的美丽与哀愁。"
+            },
+            {
+                name: "爆弾魔",
+                path: "music/爆弾魔.m4a",
+                img: "images/败犬不需要安可.jpg",
+                singer: "Yorushika",
+                album: "专辑《败犬不需要安可》",
+                review: "充满力量的摇滚曲风，歌词探讨了现代社会的压力与释放。强烈的鼓点和失真的吉他营造出爆炸性的听觉体验，副歌部分极具感染力，让人忍不住跟着节奏摇摆。\n\n歌曲以爆炸性的吉他riff开场，瞬间点燃听众的热情。主歌部分节奏紧凑，鼓点强劲有力，配合主唱充满爆发力的演唱，完美诠释了歌曲主题——现代人内心积压的情绪如同即将引爆的炸弹。\n\n副歌部分旋律抓耳且富有冲击力，失真吉他与密集的鼓点形成强烈的音墙。歌词直指现代社会中的压力与束缚，鼓励人们打破常规，释放真我。桥段部分的合成器音效为歌曲增添了现代感，最后的吉他独奏技巧精湛，将歌曲推向高潮后戛然而止，留下震撼的余韵。"
+            },
+            {
+                name: "不莱梅",
+                path: "music/不莱梅.m4a",
+                img: "images/不莱梅.jpg",
+                singer: "Yorushika",
+                album: "专辑《幻灯》",
+                review: "灵感来自格林童话的音乐之旅，轻快的旋律中带着一丝忧郁。手风琴的加入赋予歌曲欧洲民谣色彩，讲述了一个关于追寻梦想与自我发现的寓言故事。\n\n歌曲以轻快的手风琴旋律开场，瞬间营造出欧洲小镇的童话氛围。主歌部分节奏明快，木吉他的伴奏清新自然，主唱的演唱带着一丝俏皮和期待，仿佛童话中的主人公踏上冒险之旅。\n\n副歌部分旋律朗朗上口，歌词以隐喻的方式讲述追求梦想的故事。中段加入的口琴独奏是点睛之笔，为歌曲增添了流浪与自由的气息。桥段部分节奏放缓，情绪变得深沉，探讨了追梦过程中的孤独与困惑。最后一段副歌后，音乐重新变得轻快明亮，象征着主人公在经历考验后依然保持希望，继续前行。"
+            },
+            {
+                name: "放晴",
+                path: "music/放晴.mp3",
+                img: "images/放晴.jpg",
+                singer: "Yorushika",
+                album: "专辑《晴る》",
+                review: "如同雨过天晴般清澈明亮的作品，充满希望的歌词搭配轻盈的旋律。歌曲中钢琴与弦乐的对话宛如阳光穿透云层，传递出温暖与治愈的力量，适合阴霾日子里聆听。\n\n歌曲以轻柔的钢琴音符开场，仿佛清晨的第一缕阳光。主歌部分旋律简洁优美，主唱的嗓音温暖治愈，如同安慰的话语。弦乐在背景中轻轻铺垫，营造出云层渐散的画面感。\n\n副歌部分旋律开阔明亮，歌词充满希望和力量，鼓励听众走出阴霾。中段的弦乐独奏情感丰富，如同阳光穿过云层照亮大地。桥段部分节奏稍微加快，加入了轻快的鼓点，象征着心情的转变和释放。最后一段副歌后，音乐渐渐淡出，只留下清澈的钢琴音符，如同雨后天晴的宁静与美好。"
+            }
+        ];
+        
+        // Initialize the player
+        function initPlayer() {
+            load_track(index_no);
+            
+            // Add event listeners
+            volumeSlider.addEventListener('input', volume_change);
+            durationSlider.addEventListener('input', change_duration);
+            
+            // Add click events to song items
+            songItems.forEach((item, index) => {
+                item.addEventListener('click', () => {
+                    index_no = index;
+                    load_track(index_no);
+                    playsong();
+                    updateActiveSong();
+                });
+            });
+        }
+        
+        // Update active song in the list
+        function updateActiveSong() {
+            songItems.forEach((item, index) => {
+                if (index === index_no) {
+                    item.classList.add('active');
+                } else {
+                    item.classList.remove('active');
+                }
+            });
+        }
+        
+        // Load track function
+        function load_track(index_no) {
+            clearInterval(timer);
+            reset_slider();
+            
+            track.src = All_song[index_no].path;
+            title.innerHTML = All_song[index_no].name;	
+            trackImage.src = All_song[index_no].img;
+            artist.innerHTML = All_song[index_no].singer;
+            document.querySelector('.album-info').innerHTML = All_song[index_no].album;
+            reviewElement.innerHTML = All_song[index_no].review;
+            
+            track.load();
+            
+            timer = setInterval(range_slider, 1000);
+            totalTracks.innerHTML = All_song.length;
+            presentTrack.innerHTML = index_no + 1;
+            
+            updateActiveSong();
+        }
+        
+        // Mute sound function
+        function mute_sound() {
+            if (track.volume > 0) {
+                track.volume = 0;
+                volumeSlider.value = 0;
+                volumeShow.innerHTML = 0;
+                volumeIcon.classList.remove('fa-volume-up');
+                volumeIcon.classList.add('fa-volume-mute');
+            } else {
+                track.volume = volumeSlider.value / 100;
+                volumeSlider.value = 90;
+                volumeShow.innerHTML = 90;
+                volumeIcon.classList.remove('fa-volume-mute');
+                volumeIcon.classList.add('fa-volume-up');
+            }
+        }
+        
+        // Play/Pause function
+        function justplay() {
+            if (Playing_song === false) {
+                playsong();
+            } else {
+                pausesong();
+            }
+        }
+        
+        // Reset slider
+        function reset_slider() {
+            durationSlider.value = 0;
+        }
+        
+        // Play song
+        function playsong() {
+            track.play();
+            Playing_song = true;
+            play.innerHTML = '<i class="fa fa-pause" aria-hidden="true"></i>';
+            mainContainer.classList.add('playing');
+        }
+        
+        // Pause song
+        function pausesong() {
+            track.pause();
+            Playing_song = false;
+            play.innerHTML = '<i class="fa fa-play" aria-hidden="true"></i>';
+            mainContainer.classList.remove('playing');
+        }
+        
+        // Next song
+        function next_song() {
+            if (index_no < All_song.length - 1) {
+                index_no += 1;
+            } else {
+                index_no = 0;
+            }
+            load_track(index_no);
+            playsong();
+        }
+        
+        // Previous song
+        function previous_song() {
+            if (index_no > 0) {
+                index_no -= 1;
+            } else {
+                index_no = All_song.length - 1;
+            }
+            load_track(index_no);
+            playsong();
+        }
+        
+        // Volume change
+        function volume_change() {
+            track.volume = volumeSlider.value / 100;
+            volumeShow.innerHTML = volumeSlider.value;
+            
+            if (track.volume === 0) {
+                volumeIcon.classList.remove('fa-volume-up');
+                volumeIcon.classList.add('fa-volume-mute');
+            } else {
+                volumeIcon.classList.remove('fa-volume-mute');
+                volumeIcon.classList.add('fa-volume-up');
+            }
+        }
+        
+        // Change duration
+        function change_duration() {
+            const slider_position = track.duration * (durationSlider.value / 100);
+            track.currentTime = slider_position;
+        }
+        
+        // Autoplay switch
+        function autoplay_switch() {
+            if (autoplay === 1) {
+                autoplay = 0;
+                autoPlayBtn.classList.remove('active');
+            } else {
+                autoplay = 1;
+                autoPlayBtn.classList.add('active');
+            }
+        }
+        
+        // Range slider update
+        function range_slider() {
+            let position = 0;
+            
+            if (!isNaN(track.duration)) {
+                position = track.currentTime * (100 / track.duration);
+                durationSlider.value = position;
+            }
+            
+            if (track.ended) {
+                play.innerHTML = '<i class="fa fa-play" aria-hidden="true"></i>';
+                Playing_song = false;
+                mainContainer.classList.remove('playing');
+                
+                if (autoplay === 1) {
+                    next_song();
+                }
+            }
+        }
+        
+        // Initialize player when page loads
+        window.onload = initPlayer;
+    </script>
+</body>
+</html>
